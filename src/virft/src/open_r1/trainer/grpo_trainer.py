@@ -421,10 +421,10 @@ class Qwen2VLGRPOTrainer(Trainer):
 
         # Generate completions
         with unwrap_model_for_generation(model, self.accelerator) as unwrapped_model:
-            self.accelerator.print("=" * 50)
-            self.accelerator.print(
-                f"Total Number of Trainable Parameters is: {sum(p.numel() for p in unwrapped_model.parameters() if p.requires_grad)}")
-            self.accelerator.print("=" * 50)
+            # self.accelerator.print("=" * 50)
+            # self.accelerator.print(
+            #     f"Total Number of Trainable Parameters is: {sum(p.numel() for p in unwrapped_model.parameters() if p.requires_grad)}")
+            # self.accelerator.print("=" * 50)
             # prompt_inputs['pixel_values'] = prompt_inputs['pixel_values'][None]
             pixel_values = prompt_inputs["pixel_values"].repeat(self.num_generations, 1)
             prompt_completion_ids = unwrapped_model.generate(**prompt_inputs, generation_config=self.generation_config)

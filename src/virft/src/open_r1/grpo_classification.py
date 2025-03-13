@@ -14,19 +14,17 @@
 
 import os
 import re
-from datetime import datetime
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import Optional
 
-from datasets import load_dataset, load_from_disk
-from transformers import Qwen2VLForConditionalGeneration
-
+from datasets import load_dataset
 from math_verify import parse, verify
+from trl import GRPOConfig, ModelConfig, ScriptArguments, TrlParser, get_peft_config
+
 # from open_r1.trainer import Qwen2VLGRPOTrainer
 from open_r1.trainer import Qwen2VLGRPOTrainer, Qwen2VLGRPOVLLMTrainer
-from trl import GRPOConfig, GRPOTrainer, ModelConfig, ScriptArguments, TrlParser, get_peft_config
 
-import json
 
 @dataclass
 class GRPOScriptArguments(ScriptArguments):
@@ -73,20 +71,20 @@ def accuracy_reward(completions, solution, **kwargs):
                 # Extract answer from solution if it has think/answer tags
                 sol_match = re.search(r'<answer>(.*?)</answer>', sol)
                 ground_truth = sol_match.group(1).strip() if sol_match else sol.strip()
-                
+
                 # Extract answer from content if it has think/answer tags
                 content_match = re.search(r'<answer>(.*?)</answer>', content)
                 student_answer = content_match.group(1).strip() if content_match else content.strip()
-                
-                ground_truth = ground_truth.replace(' ','').replace('_','').lower()
-                student_answer = student_answer.replace(' ','').replace('_','').lower()
+
+                ground_truth = ground_truth.replace(' ', '').replace('_', '').lower()
+                student_answer = student_answer.replace(' ', '').replace('_', '').lower()
 
                 # Compare the extracted answers
                 if ground_truth in student_answer or student_answer in ground_truth:
                     reward = 1.0
             except Exception:
                 pass  # Keep reward as 0.0 if both methods fail
-                
+
         rewards.append(reward)
         # import pdb; pdb.set_trace()
         if os.getenv("DEBUG_MODE") == "true":
@@ -98,6 +96,7 @@ def accuracy_reward(completions, solution, **kwargs):
                 f.write(f"sol: {sol}\n")
     return rewards
 
+
 def format_reward(completions, **kwargs):
     """Reward function that checks if the completion has a specific format."""
     pattern = r"<think>.*?</think>\s*<answer>.*?</answer>"
@@ -106,32 +105,35 @@ def format_reward(completions, **kwargs):
     matches = [re.fullmatch(pattern, content, re.DOTALL) for content in completion_contents]
     return [1.0 if match else 0.0 for match in matches]
 
+
 reward_funcs_registry = {
     "accuracy": accuracy_reward,
     "format": format_reward,
 }
 
 SYSTEM_PROMPT = (
-    "A conversation between User and Assistant. The user asks a question, and the Assistant solves it. The assistant "
-    "first thinks about the reasoning process in the mind and then provides the user with the answer. The reasoning "
-    "process and answer are enclosed within <think> </think> and <answer> </answer> tags, respectively, i.e., "
-    "<think> reasoning process here </think><answer> answer here </answer>"
+    "A conversation between User and Assistant. The user provides an echocardiography image of heart"
+    " and asks a view prediction question, and the Assistant predicts the view."
+    "The assistant first thinks about the reasoning process in the mind and then provides the user"
+    "with the prediction. The reasoning process and answer are enclosed within <think> </think> and"
+    "<answer> </answer> tags, respectively, i.e., <think> reasoning process here </think>"
+    "<answer> answer here </answer>."
 )
 
 
 def main(script_args, training_args, model_args):
     # Get reward functions
     # import pdb; pdb.set_trace()
-    script_args.reward_funcs = ['accuracy','format']
+    script_args.reward_funcs = ['accuracy', 'format']
     reward_funcs = [reward_funcs_registry[func] for func in script_args.reward_funcs]
     # import pdb; pdb.set_trace()
 
     # Load the dataset
     dataset = load_dataset(script_args.dataset_name)
-    ### lzy modified
-    #from datasets import DatasetDict
-    #dataset = DatasetDict.load_from_disk(script_args.dataset_name)
 
+    ### lzy modified
+    # from datasets import DatasetDict
+    # dataset = DatasetDict.load_from_disk(script_args.dataset_name)
 
     # Format into conversation
     def make_conversation(example):
@@ -155,7 +157,6 @@ def main(script_args, training_args, model_args):
             ],
         }
 
-
     if "image" in dataset[script_args.dataset_train_split].features:
         print("has image in dataset")
         dataset = dataset.map(make_conversation_image)  # Utilize multiprocessing for faster mapping
@@ -166,10 +167,8 @@ def main(script_args, training_args, model_args):
         dataset = dataset.map(make_conversation)
         dataset = dataset.remove_columns("messages")
 
-    
     trainer_cls = Qwen2VLGRPOTrainer if not training_args.use_vllm else Qwen2VLGRPOVLLMTrainer
     print("using: ", trainer_cls)
-
 
     # Initialize the GRPO trainer
     trainer = trainer_cls(
@@ -184,6 +183,7 @@ def main(script_args, training_args, model_args):
         max_pixels=script_args.max_pixels,
         min_pixels=script_args.min_pixels,
     )
+    print(len(trainer.train_dataset))
 
     # Train and push the model to the Hub
     trainer.train()
