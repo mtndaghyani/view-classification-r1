@@ -2,7 +2,7 @@ export DEBUG_MODE="true"
 export LOG_PATH="./debug_log_2b_GRPO_aircraft_4_shot.txt"
 
 export DATA_PATH=./view_classification_data
-export CKPT_PATH=/home/matin.daghyani/code/LLaMA-Factory/models/qwen2_vl_echo_labels_only
+export CKPT_PATH=Qwen/Qwen2-VL-2B-Instruct
 export SAVE_PATH=./share_models/Qwen2-VL-2B-R1-Echo-View-Classification
 
 
@@ -16,7 +16,7 @@ torchrun --nproc_per_node="7" \
     --model_name_or_path ${CKPT_PATH} \
     --dataset_name ${DATA_PATH} \
     --deepspeed ./zero3.json \
-    --max_prompt_length 1024 \
+    --max_prompt_length 2056 \
     --per_device_train_batch_size 1 \
     --gradient_accumulation_steps 2 \
     --logging_steps 1 \
