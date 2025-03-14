@@ -129,11 +129,11 @@ def main(script_args, training_args, model_args):
     # import pdb; pdb.set_trace()
 
     # Load the dataset
-    dataset = load_dataset(script_args.dataset_name)
+    # dataset = load_dataset(script_args.dataset_name)
 
     ### lzy modified
-    # from datasets import DatasetDict
-    # dataset = DatasetDict.load_from_disk(script_args.dataset_name)
+    from datasets import DatasetDict
+    dataset = DatasetDict.load_from_disk(script_args.dataset_name)
 
     # Format into conversation
     def make_conversation(example):

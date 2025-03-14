@@ -188,7 +188,7 @@ class Qwen2VLGRPOTrainer(Trainer):
             model_init_kwargs["use_cache"] = (
                 False if args.gradient_checkpointing else model_init_kwargs.get("use_cache")
             )
-            if "Qwen2-VL" in model_id:
+            if "Qwen2-VL" in model_id or "qwen2_vl" in model_id:
                 model = Qwen2VLForConditionalGeneration.from_pretrained(model, **model_init_kwargs)
             elif "Qwen2.5-VL" in model_id:
                 model = Qwen2_5_VLForConditionalGeneration.from_pretrained(model, **model_init_kwargs)
@@ -238,7 +238,7 @@ class Qwen2VLGRPOTrainer(Trainer):
         # Reference model lzy modified
         if peft_config is None:
             if is_deepspeed_zero3_enabled():
-                if "Qwen2-VL" in model_id:
+                if "Qwen2-VL" in model_id or "qwen2_vl" in model_id:
                     self.ref_model = Qwen2VLForConditionalGeneration.from_pretrained(model_id, **model_init_kwargs)
                 elif "Qwen2.5-VL" in model_id:
                     self.ref_model = Qwen2_5_VLForConditionalGeneration.from_pretrained(model_id, **model_init_kwargs)
@@ -256,7 +256,7 @@ class Qwen2VLGRPOTrainer(Trainer):
 
         # Processing class
         if processing_class is None:
-            if "Qwen2-VL" in model_id or "Qwen2.5-VL" in model_id or "Aria" in model_id:
+            if "Qwen2-VL" in model_id or "Qwen2.5-VL" in model_id  or "qwen2_vl" in model_id or "Aria" in model_id:
                 processing_class = AutoProcessor.from_pretrained(model_id)
                 pad_token_id = processing_class.tokenizer.pad_token_id
                 processing_class.pad_token_id = pad_token_id

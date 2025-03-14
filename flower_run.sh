@@ -1,9 +1,9 @@
 export DEBUG_MODE="true"
 export LOG_PATH="./debug_log_2b_GRPO_aircraft_4_shot.txt"
 
-export DATA_PATH=laolao77/ViRFT_CLS_flower_4_shot
-export CKPT_PATH=Qwen/Qwen2-VL-2B-Instruct
-export SAVE_PATH=./share_models/Qwen2-VL-2B-Instruct_GRPO_aircraft_4_shot
+export DATA_PATH=./view_classification_data
+export CKPT_PATH=/home/matin.daghyani/code/LLaMA-Factory/models/qwen2_vl_echo_labels_only
+export SAVE_PATH=./share_models/Qwen2-VL-2B-R1-Echo-View-Classification
 
 
 torchrun --nproc_per_node="7" \
@@ -25,7 +25,7 @@ torchrun --nproc_per_node="7" \
     --gradient_checkpointing true \
     --max_pixels 401408 \
     --num_train_epochs 4 \
-    --run_name Qwen2-VL-2B_GRPO_aircraft100_4shot \
+    --run_name view_classification_r1_num_gen_2 \
     --save_steps 100 \
     --save_only_model true \
     --num_generations 2
