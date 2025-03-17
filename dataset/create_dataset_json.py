@@ -4,7 +4,7 @@ import os
 
 PATH_TO_DATA = '/home/matin.daghyani/code/gmm-for-view-classification/data/train/'  # To the train directory
 SAMPLE_PER_CLASS = 100  # How many samples per class
-rules = "Provide reasoning: Justify your classification based on the following key elements:\n" \
+rules = "Justify your classification based on the following key elements:\n" \
         "- Key Structures: Identify which anatomical structures are visible in the image. Options include:\n" \
         "  - Left Atrium (LA)\n" \
         "  - Right Atrium (RA)\n" \
@@ -32,7 +32,10 @@ rules = "Provide reasoning: Justify your classification based on the following k
 
 prompt = "Classify the view of this echocardiography image into: AP2, AP3, AP4, AP5," \
          " PLAX, RVIF, SUBC4, SUBC5, SUBIVC, PSAXAo PSAXM, PSAXPM, PSAXAp, SUPRA.\n" \
-         f" {rules}"
+         f" {rules}\n" \
+         "Output the thinking process in <think> </think> and final answer in <answer> </answer> tags.The output answer format should be as follows:" \
+         "<think> ... </think> <answer>view</answer>" \
+         "Please strictly follow the format."
 
 random.seed(42)
 
