@@ -16,7 +16,7 @@ def json_to_dataset(json_file_path):
     problems = [item['problem'] for item in data]
     solutions = [item['solution'] for item in data]
 
-    images = [Image.open(image_path) for image_path in image_paths]
+    images = [Image.open(image_path).copy() for image_path in image_paths]
 
     dataset_dict = {
         'image': images,

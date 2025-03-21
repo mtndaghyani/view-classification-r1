@@ -2,7 +2,7 @@ import json
 import random
 import os
 
-PATH_TO_DATA = '/home/matin.daghyani/code/gmm-for-view-classification/data/train/'  # To the train directory
+PATH_TO_DATA = '/arc/project/st-puranga-1/users/matin/datasets/view_classification/train/'  # To the train directory
 SAMPLE_PER_CLASS = 100  # How many samples per class
 rules = "Justify your classification based on the following key elements:\n" \
         "- Key Structures: Identify which anatomical structures are visible in the image. Options include:\n" \
