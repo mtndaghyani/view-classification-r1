@@ -57,15 +57,6 @@ def accuracy_reward(completions, solution, **kwargs):
     current_time = datetime.now().strftime("%d-%H-%M-%S-%f")
     for content, sol in zip(contents, solution):
         reward = 0.0
-        # Try symbolic verification first
-        try:
-            answer = parse(content)
-            if float(verify(answer, parse(sol))) > 0:
-                reward = 1.0
-        except Exception:
-            pass  # Continue to next verification method if this fails
-
-        # If symbolic verification failed, try string matching
         if reward == 0.0:
             try:
                 # Extract answer from solution if it has think/answer tags
@@ -79,8 +70,7 @@ def accuracy_reward(completions, solution, **kwargs):
                 ground_truth = ground_truth.replace(' ', '').replace('_', '').lower()
                 student_answer = student_answer.replace(' ', '').replace('_', '').lower()
 
-                # Compare the extracted answers
-                if ground_truth in student_answer or student_answer in ground_truth:
+                if ground_truth == student_answer:
                     reward = 1.0
             except Exception:
                 pass  # Keep reward as 0.0 if both methods fail
