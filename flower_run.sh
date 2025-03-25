@@ -1,12 +1,13 @@
+export TRITON_CACHE_DIR=/scratch/st-puranga-1/users/matin/tmp/triton
 export DEBUG_MODE="true"
-export LOG_PATH="./debug_log_2b_GRPO_aircraft_4_shot.txt"
+export LOG_PATH="./debug_log_sft_num_gen_3_vis_frozen.txt"
 
-export DATA_PATH=./view_classification_data
-export CKPT_PATH=Qwen/Qwen2-VL-2B-Instruct
-export SAVE_PATH=./share_models/Qwen2-VL-2B-R1-Echo-View-Classification
+export DATA_PATH=./data
+export CKPT_PATH=/arc/project/st-puranga-1/users/matin/models/qwen2_vl_echo_labels_only/
+export SAVE_PATH=./share_models/Qwen2-VL-2B-R1-SFT-Num-Gen-3
 
 
-torchrun --nproc_per_node="7" \
+torchrun --nproc_per_node="4" \
     --nnodes="1" \
     --node_rank="0" \
     --master_addr="127.0.0.1" \
@@ -25,7 +26,7 @@ torchrun --nproc_per_node="7" \
     --gradient_checkpointing true \
     --max_pixels 401408 \
     --num_train_epochs 4 \
-    --run_name view_classification_r1_num_gen_2 \
+    --run_name view_classification_r1_num_gen_3_vis_frozen \
     --save_steps 100 \
     --save_only_model true \
-    --num_generations 2
+    --num_generations 3
